@@ -3,6 +3,7 @@ import nock from 'nock'
 import Enzyme from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'
 import log from 'loglevel'
+import sinon from 'sinon'
 
 nock.disableNetConnect()
 nock.enableNetConnect('localhost')
@@ -81,6 +82,21 @@ window.localStorage = {}
 
 // override metamask-logo
 window.requestAnimationFrame = () => {}
+
+// mock window.matchMedia which is not provided by jsDom
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: sinon.fake((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: sinon.fake(),
+    removeListener: sinon.fake(),
+    addEventListener: sinon.fake(),
+    removeEventListener: sinon.fake(),
+    dispatchEvent: sinon.fake(),
+  })),
+})
 
 // crypto.getRandomValues
 if (!window.crypto) {

@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import Identicon from '../../ui/identicon'
 import ListItem from '../../ui/list-item'
+import Tooltip from '../../ui/tooltip-v2'
+import InfoIcon from '../../ui/icon/info-icon.component'
+
 
 const AssetListItem = ({
   className,
@@ -15,12 +18,40 @@ const AssetListItem = ({
   primary,
   secondary,
 }) => {
+  const titleIcon = useMemo(() => {
+    if (!warning) {
+      return null
+    }
+
+    return (
+      <Tooltip
+        wrapperClassName="asset-list-item__warning-tooltip"
+        interactive
+        position="bottom"
+        html={warning}
+      ><InfoIcon severity="warning" />
+      </Tooltip>
+    )
+  }, [warning])
+
+  const midContent = useMemo(() => {
+    if (!warning) {
+      return null
+    }
+    return (
+      <>
+        <InfoIcon severity="warning" />
+        <div className="asset-list-item__warning">{warning}</div>
+      </>
+    )
+
+  }, [warning])
   return (
     <ListItem
       className={classnames('asset-list-item', className)}
       data-testid={dataTestId}
       title={primary}
-      titleIcon={warning}
+      titleIcon={titleIcon}
       subtitle={secondary}
       onClick={onClick}
       icon={(
@@ -31,6 +62,7 @@ const AssetListItem = ({
           image={tokenImage}
         />
       )}
+      midContent={midContent}
       rightContent={<i className="fas fa-chevron-right asset-list-item__chevron-right" />}
     />
   )
